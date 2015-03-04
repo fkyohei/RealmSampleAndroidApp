@@ -44,16 +44,16 @@ public class MainActivity extends ActionBarActivity {
         RealmQuery<Task> query = realm.where(Task.class);
 
         RealmResults<Task> results = query.findAll();
-
+Log.i("", results.toString());
         taskadapter = new TaskAdapter(this, new TaskAdapter.OnItemClickListener() {
             public void onItemClick(Task task) {
                 // ...
             }
         });
 
-        todoListView.setAdapter(taskadapter);
-
         taskadapter.setResults(results);
+
+        todoListView.setAdapter(taskadapter);
 
     }
 
