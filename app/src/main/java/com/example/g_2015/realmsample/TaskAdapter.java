@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
 
 /**
  * Created by g-2015 on 2015/03/04.
@@ -63,6 +65,26 @@ public final class TaskAdapter extends RealmAdapter<Task, TaskAdapter.ViewHolder
                 listener.onItemClick(item);
             }
         });
+        holder.checkBox.setChecked(item.getisChecked());
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                new TaskEditActivity().updateTodo(isChecked);
+
+            }
+        });
+    }
+
+    public List<Task> getCheckedTodoList() {
+        List<Task> checkedTotoList = new ArrayList<Task>();
+        for (int i = 0; i < getCount(); i++) {
+            Task task = getItem(i);
+            if (task.getisChecked()) {
+                checkedTotoList.add(task);
+            }
+        }
+        return checkedTotoList;
     }
 
 }

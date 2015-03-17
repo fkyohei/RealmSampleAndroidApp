@@ -12,6 +12,7 @@ public class Task extends RealmObject {
     private String Task;
     private long Created;
     private long LastUpdated;
+    private boolean isChecked;
 
     public int getId() {
         return Id;
@@ -43,5 +44,13 @@ public class Task extends RealmObject {
 
     public void setLastUpdated(long lastUpdated) {
         this.LastUpdated = lastUpdated;
+    }
+
+    public boolean getisChecked() {
+        return isChecked;
+    }
+
+    public void setisChecked(boolean checked) {
+        this.isChecked = checked;
     }
 }

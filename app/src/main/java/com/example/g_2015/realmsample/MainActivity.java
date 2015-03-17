@@ -1,9 +1,9 @@
 package com.example.g_2015.realmsample;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,14 +12,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import io.realm.Realm;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 import com.example.g_2015.realmsample.model.Task;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends ActionBarActivity {
+
+    public static final int EDIT_REQUEST_CODE = 0x111;
 
     Button todoAddButton;
     ListView todoListView;
@@ -41,13 +44,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void loadTodoList() {
-        RealmQuery<Task> query = realm.where(Task.class);
+        RealmResults<Task> results = realm.where(Task.class)
+                                          .findAll();
 
-        RealmResults<Task> results = query.findAll();
-Log.i("", results.toString());
         taskadapter = new TaskAdapter(this, new TaskAdapter.OnItemClickListener() {
             public void onItemClick(Task task) {
-                // ...
+                openTodoEdit(task);
             }
         });
 
@@ -57,16 +59,31 @@ Log.i("", results.toString());
 
     }
 
+    private void openTodoEdit(Task task) {
+        Intent intent = new Intent(this, TaskEditActivity.class);
+        intent.putExtra("task", task.getTask());
+        intent.putExtra("task_id", task.getId());
+        startActivity(intent);
+    }
+
     public void addTaskList(View view) {
         todoAddTask = (EditText) findViewById(R.id.addTask);
         long date = new Date().getTime();
 
+        Random rnd = new Random();
+        int ran = rnd.nextInt(1000);
+
         realm.beginTransaction();
         Task task = realm.createObject(Task.class); // Create a new object
+        task.setId(ran);
         task.setTask(todoAddTask.getText().toString());
         task.setCreated(date);
         task.setLastUpdated(date);
+        task.setisChecked(false);
         realm.commitTransaction();
+
+        todoAddTask.setText("");
+        loadTodoList();
     }
 
     @Override
@@ -78,16 +95,23 @@ Log.i("", results.toString());
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                deleteCheckedTodo();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteCheckedTodo() {
+        final List<Task> checkedTodoList = taskadapter.getCheckedTodoList();
+        realm.beginTransaction();
+        for( Task task : checkedTodoList) {
+            realm.where(Task.class)
+                 .equalTo("Id", task.getId())
+                 .findAll()
+                 .clear();
+        }
+        realm.commitTransaction();
     }
 }

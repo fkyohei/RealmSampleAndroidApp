@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.g_2015.realmsample.TaskEditActivity"
+            android:label="@string/title_activity_todo_edit">
+        </activity>
     </application>
 
 </manifest>
