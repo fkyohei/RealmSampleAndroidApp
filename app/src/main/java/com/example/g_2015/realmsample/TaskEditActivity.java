@@ -1,11 +1,9 @@
 package com.example.g_2015.realmsample;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -26,6 +24,8 @@ public class TaskEditActivity extends ActionBarActivity {
     EditText taskEdit;
 
     Realm realm;
+
+    Realm realm_2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +53,14 @@ public class TaskEditActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_update) {
-            updateTodo(task.getisChecked());
+            String newText = taskEdit.getText().toString();
+            updateTodo(task.getId(), newText, task.getisChecked());
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateTodo(boolean isChecked) {
-        String text = taskEdit.getText().toString();
+    public void updateTodo(int id, String text, boolean isChecked) {
         if (TextUtils.isEmpty(text)) {
             return;
         }
@@ -69,8 +69,8 @@ public class TaskEditActivity extends ActionBarActivity {
 
 
         Task newtask = realm.where(Task.class)
-                         .equalTo("Id", task.getId())
-                         .findFirst();
+                .equalTo("Id", id)
+                .findFirst();
         realm.beginTransaction();
         newtask.setTask(text);
         newtask.setLastUpdated(date);

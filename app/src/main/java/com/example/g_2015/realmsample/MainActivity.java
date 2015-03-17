@@ -2,7 +2,6 @@ package com.example.g_2015.realmsample;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,14 +21,12 @@ import java.util.Random;
 
 public class MainActivity extends ActionBarActivity {
 
-    public static final int EDIT_REQUEST_CODE = 0x111;
-
     Button todoAddButton;
     ListView todoListView;
     EditText todoAddTask;
     TaskAdapter taskadapter;
 
-    private Realm realm;
+    public Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +34,6 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         todoAddButton = (Button) findViewById(R.id.addbtn);
         todoListView = (ListView) findViewById(R.id.listView);
-
         realm = Realm.getInstance(this);
 
         loadTodoList();
@@ -68,6 +64,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void addTaskList(View view) {
         todoAddTask = (EditText) findViewById(R.id.addTask);
+
+        if( todoAddTask == null) {
+            return;
+        }
         long date = new Date().getTime();
 
         Random rnd = new Random();
@@ -113,5 +113,8 @@ public class MainActivity extends ActionBarActivity {
                  .clear();
         }
         realm.commitTransaction();
+
+        loadTodoList();
     }
+
 }

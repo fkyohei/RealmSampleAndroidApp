@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.realm.Realm;
+
 /**
  * Created by g-2015 on 2015/03/04.
  */
@@ -22,6 +24,8 @@ public final class TaskAdapter extends RealmAdapter<Task, TaskAdapter.ViewHolder
     private final static SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
     private final static Date DATE = new Date();
+
+    Context context;
 
     public static class ViewHolder extends RealmAdapter.ViewHolder {
         public final CheckBox checkBox;
@@ -46,6 +50,7 @@ public final class TaskAdapter extends RealmAdapter<Task, TaskAdapter.ViewHolder
     public TaskAdapter(Context context, OnItemClickListener listener) {
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -69,8 +74,18 @@ public final class TaskAdapter extends RealmAdapter<Task, TaskAdapter.ViewHolder
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Realm realm = Realm.getInstance(context);
 
-                new TaskEditActivity().updateTodo(isChecked);
+                long date = new Date().getTime();
+
+                Task newtask = realm.where(Task.class)
+                        .equalTo("Id", item.getId())
+                        .findFirst();
+                realm.beginTransaction();
+                newtask.setTask(item.getTask());
+                newtask.setLastUpdated(date);
+                newtask.setisChecked(isChecked);
+                realm.commitTransaction();
 
             }
         });
